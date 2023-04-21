@@ -477,6 +477,7 @@ class DynamicDiffusionDetHead(nn.Module):
     def loss_and_predict(self,
                      x: Tuple[Tensor],
                      batch_data_samples: SampleList,
+                     proposal_cfg:None,
                      rescale: bool = False) -> Tuple[dict, List[InstanceData]]:
     # Calculate losses
       losses = self.loss(x, batch_data_samples)
