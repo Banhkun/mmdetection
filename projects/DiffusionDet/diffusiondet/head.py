@@ -7,6 +7,7 @@
 # This work is licensed under the CC-BY-NC 4.0 License.
 # Users should be careful about adopting these features in any commercial matters.    # noqa
 # For more details, please refer to https://github.com/ShoufaChen/DiffusionDet/blob/main/LICENSE    # noqa
+from mmengine.config import ConfigDict
 
 import copy
 import math
