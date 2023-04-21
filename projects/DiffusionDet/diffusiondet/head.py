@@ -429,8 +429,7 @@ class DynamicDiffusionDetHead(nn.Module):
 
         return sqrt_alphas_cumprod_t * x_start + \
             sqrt_one_minus_alphas_cumprod_t * noise
-
-    def predict(self,
+    def loss_and_predict(self,
                 x: Tuple[Tensor],
                 batch_data_samples: SampleList,
                 rescale: bool = False) -> InstanceList:
@@ -455,6 +454,30 @@ class DynamicDiffusionDetHead(nn.Module):
         # random.seed(seed)
         # torch.manual_seed(seed)
         # torch.cuda.manual_seed_all(seed)
+        prepare_outputs = self.prepare_training_targets(batch_data_samples)
+        (batch_gt_instances, batch_pred_instances, batch_gt_instances_ignore,
+         batch_img_metas) = prepare_outputs
+
+        batch_diff_bboxes = torch.stack([
+            pred_instances.diff_bboxes_abs
+            for pred_instances in batch_pred_instances
+        ])
+        batch_time = torch.stack(
+            [pred_instances.time for pred_instances in batch_pred_instances])
+
+        pred_logits, pred_bboxes = self(x, batch_diff_bboxes, batch_time)
+
+        output = {
+            'pred_logits': pred_logits[-1],
+            'pred_boxes': pred_bboxes[-1]
+        }
+        if self.deep_supervision:
+            output['aux_outputs'] = [{
+                'pred_logits': a,
+                'pred_boxes': b
+            } for a, b in zip(pred_logits[:-1], pred_bboxes[:-1])]
+
+        losses = self.criterion(output, batch_gt_instances, batch_img_metas)
 
         device = x[-1].device
 
@@ -474,8 +497,7 @@ class DynamicDiffusionDetHead(nn.Module):
             batch_image_size=batch_image_size,
             device=device,
             batch_img_metas=batch_img_metas)
-        return predictions
-
+        return losses, predictions
     def predict_by_feat(self,
                         x,
                         time_pairs,
