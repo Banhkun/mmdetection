@@ -12,7 +12,7 @@ import copy
 import math
 import random
 import warnings
-from typing import Tuple
+from typing import List, Optional, Tuple
 
 import torch
 import torch.nn as nn
