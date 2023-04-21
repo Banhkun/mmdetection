@@ -478,43 +478,29 @@ class DynamicDiffusionDetHead(nn.Module):
                      x: Tuple[Tensor],
                      batch_data_samples: SampleList,
                      rescale: bool = False) -> Tuple[dict, List[InstanceData]]:
-    """
-    Perform forward propagation of the detection head and predict detection results
-    on the features of the upstream network.
-
-    Args:
-        x (tuple[Tensor]): Multi-level features from the upstream network, each is a 4D-tensor.
-        batch_data_samples (List[DetDataSample]): The Data Samples. It usually includes
-            information such as `gt_instance`, `gt_panoptic_seg` and `gt_sem_seg`.
-        rescale (bool, optional): Whether to rescale the results. Defaults to False.
-
-    Returns:
-        Tuple[dict, list[InstanceData]]: A tuple containing the dictionary of loss components and
-            the detection results of each image after the post process.
-    """
     # Calculate losses
-    losses = self.loss(x, batch_data_samples)
+      losses = self.loss(x, batch_data_samples)
 
-    # Prepare for prediction
-    device = x[-1].device
-    batch_img_metas = [
-        data_samples.metainfo for data_samples in batch_data_samples
-    ]
+      # Prepare for prediction
+      device = x[-1].device
+      batch_img_metas = [
+          data_samples.metainfo for data_samples in batch_data_samples
+      ]
 
-    (time_pairs, batch_noise_bboxes, batch_noise_bboxes_raw,
-     batch_image_size) = self.prepare_testing_targets(batch_img_metas, device)
+      (time_pairs, batch_noise_bboxes, batch_noise_bboxes_raw,
+      batch_image_size) = self.prepare_testing_targets(batch_img_metas, device)
 
-    # Predict
-    predictions = self.predict_by_feat(
-        x,
-        time_pairs=time_pairs,
-        batch_noise_bboxes=batch_noise_bboxes,
-        batch_noise_bboxes_raw=batch_noise_bboxes_raw,
-        batch_image_size=batch_image_size,
-        device=device,
-        batch_img_metas=batch_img_metas)
+      # Predict
+      predictions = self.predict_by_feat(
+          x,
+          time_pairs=time_pairs,
+          batch_noise_bboxes=batch_noise_bboxes,
+          batch_noise_bboxes_raw=batch_noise_bboxes_raw,
+          batch_image_size=batch_image_size,
+          device=device,
+          batch_img_metas=batch_img_metas)
 
-    return losses, predictions
+      return losses, predictions
 
     def predict_by_feat(self,
                         x,
