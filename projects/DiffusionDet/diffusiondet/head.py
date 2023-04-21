@@ -676,9 +676,9 @@ class DynamicDiffusionDetHead(nn.Module):
             results.bboxes = scale_boxes(results.bboxes, scale_factor)
             # clip w, h
             h, w = img_meta['ori_shape']
-            results.bboxes[:, 0::2] = results.bboxes[:, 0::2].clone().clamp(
+            results.bboxes[:, 0::2] = results.bboxes[:, 0::2].clamp(
                 min=0, max=w)
-            results.bboxes[:, 1::2] = results.bboxes[:, 1::2].clone().clamp(
+            results.bboxes[:, 1::2] = results.bboxes[:, 1::2].clamp(
                 min=0, max=h)
 
             # filter small size bboxes
