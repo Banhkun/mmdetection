@@ -432,6 +432,7 @@ class DynamicDiffusionDetHead(nn.Module):
     def loss_and_predict(self,
                 x: Tuple[Tensor],
                 batch_data_samples: SampleList,
+                proposal_cfg: Optional[ConfigDict] = None,
                 rescale: bool = False) -> InstanceList:
         """Perform forward propagation of the detection head and predict
         detection results on the features of the upstream network.
