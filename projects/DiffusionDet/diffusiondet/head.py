@@ -42,7 +42,7 @@ def cosine_beta_schedule(timesteps, s=0.008):
         ((x / timesteps) + s) / (1 + s) * math.pi * 0.5)**2
     alphas_cumprod = alphas_cumprod / alphas_cumprod[0]
     betas = 1 - (alphas_cumprod[1:] / alphas_cumprod[:-1])
-    return torch.clip(betas, 0, 0.999)
+    return torch.clamp(betas, 0, 0.999)
 
 
 def extract(a, t, x_shape):
@@ -388,7 +388,7 @@ class DynamicDiffusionDetHead(nn.Module):
             # 3 * sigma = 1/2 --> sigma: 1/6
             box_placeholder = torch.randn(
                 self.num_proposals - num_gt, 4, device=device) / 6. + 0.5
-            box_placeholder[:, 2:] = torch.clip(
+            box_placeholder[:, 2:] = torch.clamp(
                 box_placeholder[:, 2:], min=1e-4)
             x_start = torch.cat((gt_boxes, box_placeholder), dim=0)
         else:
